@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.zero.product.web.persistence.SysDictMapper">
+    <!-- Result Map-->
+    <resultMap id="ResultMap" type="com.zero.product.web.entity.SysDictEntity">
+        <result column="id" property="id"/><!--  -->
+        <result column="create_dttm" property="createDatetime"/><!--  -->
+        <result column="create_user" property="createUser"/><!--  -->
+        <result column="update_dttm" property="updateDatetime"/><!--  -->
+        <result column="update_user" property="updateUser"/><!--  -->
+        <result column="code" property="code"/><!--  -->
+        <result column="label" property="label"/><!--  -->
+        <result column="description" property="description"/>
+
+    </resultMap>
+
+    <resultMap id="ResultMapWithItems" type="com.zero.product.web.entity.SysDictEntity" extends="ResultMap">
+        <collection property="items" ofType="com.zero.product.web.entity.SysDictItemEntity">
+            <result column="i_dict_code" property="dictCode"/>
+            <result column="i_code" property="code"/>
+            <result column="i_label" property="label"/>
+            <result column="i_description" property="description"/>
+            <result column="i_sort" property="sort"/>
+        </collection>
+    </resultMap>
+
+
+    <sql id="Column_List">
+        <trim suffixOverrides=",">
+            id,
+            create_dttm,
+            create_user,
+            update_dttm,
+            update_user,
+            code,
+            label,
+            description,
+        </trim>
+    </sql>
+
+    <sql id="Column_List_WITH_ITEMS">
+        <trim suffixOverrides=",">
+            t.id,
+            t.create_dttm,
+            t.create_user,
+            t.update_dttm,
+            t.update_user,
+            t.code,
+            t.label,
+            t.description,
+            i.dict_code i_dict_code,
+            i.code i_code,
+            i.label i_label,
+            i.description i_description,
+            i.sort i_sort,
+        </trim>
+    </sql>
+
+    <select id="selectSysDictEntityByCode" resultMap="ResultMapWithItems" parameterType="string">
+        select
+        <include refid="Column_List_WITH_ITEMS"/>
+        from t_sys_dict t
+        left join t_sys_dict_item i
+        on t.code = i.dict_code
+        where t.code = #{code,jdbcType=VARCHAR}
+    </select>
+
+    <select id="selectSysDictEntity" resultMap="ResultMapWithItems">
+        select
+        <include refid="Column_List_WITH_ITEMS"/>
+        from t_sys_dict t
+        left join t_sys_dict_item i
+        on t.code = i.dict_code
+    </select>
+
+</mapper>   

@@ -1,0 +1,79 @@
+POST http://localhost:8900/products
+Content-Type: application/json
+
+{
+  "productCode": "0002",
+  "category": "asset1",
+  "tenantId": "1",
+  "busiType": "020",
+  "status": "0",
+  "features": [
+    {"featureType": "StringValueFeatureImpl",
+      "name": "loanMoney",
+    "value": "123"},
+    {
+      "featureType": "DataDictValueFeatureImpl",
+      "name": "repayway",
+      "dictCode": "001",
+      "value": "1"
+    },    {
+      "featureType": "DescriptionValueFeatureImpl",
+      "name": "desc",
+      "value": "FDfwefeworjewoirewor"
+    },
+       {
+      "featureType": "LongRangeFeatureImpl",
+      "name": "deadline",
+      "minValue": "1", "maxValue": "10"
+    },
+    {
+      "featureType": "FeeItemListFeatureImpl",
+      "name": "feeItems",
+      "values": [
+        {"feeCode": "001"}
+      ]
+    },
+    {
+      "featureType": "GuaranteeModelListFeatureImpl",
+      "name": "guaranteeModels",
+      "values": [
+        {"orgCode": "001"}
+      ]
+    }
+  ]
+}
+
+###
+GET http://localhost:8900/products/0002
+
+###
+POST http://localhost:8900/category
+Content-Type: application/json
+
+{
+  "category": "asset1",
+  "name": "资产产品",
+  "tenantId": "1",
+  "features": [
+    {
+      "name": "loanMoney",
+      "clazz": "StringValueFeatureImpl",
+      "checkRule": "@value > 0 and @value < 10000000"
+    },
+    {
+      "name": "repayway",
+      "clazz": "DataDictValueFeatureImpl",
+      "dictCode": "001",
+      "checkRule": "T(com.zero.product.web.data.SysDictManager).checkExist('@dictCode','@value')"
+    },
+    {
+      "clazz": "LongRangeFeatureImpl",
+      "name": "deadline"
+    }
+  ],
+  "busiTypes": [
+    {"busiType": "020", "description": "房抵"},
+    {"busiType": "030", "description": "信贷"}
+  ]
+}
+

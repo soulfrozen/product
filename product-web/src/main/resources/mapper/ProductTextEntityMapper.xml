@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.zero.product.web.persistence.ProductTextEntityMapper">
+    <!-- Result Map-->
+    <resultMap id="ResultMap" type="com.zero.product.web.entity.ProductTextEntity">
+
+        <result column="text_id" property="textId"/><!--  -->
+        <result column="product_code" property="productCode"/>
+        <result column="value" property="value"/><!--  -->
+
+    </resultMap>
+
+
+    <!-- t_prd_info table all fields -->
+    <sql id="Column_List">
+        <trim suffixOverrides=",">
+            text_id,
+            product_code,
+            value,
+        </trim>
+    </sql>
+
+
+    <!-- 插入记录 // 主键生成方式 01:UUID 02:自增 -->
+    <insert id="insertProductTextEntity" parameterType="com.zero.product.web.entity.ProductTextEntity">
+
+        Insert Into t_product_text
+        (
+        <include refid="Column_List"/>
+        )
+        Values
+        (
+        <trim suffixOverrides=",">
+            #{textId,jdbcType=VARCHAR},
+            #{productCode,jdbcType=VARCHAR},
+            #{value,jdbcType=VARCHAR},
+        </trim>
+        )
+    </insert>
+
+    <select id="selectProductTextEntityByProductCodeAndTextId" resultMap="ResultMap">
+        select
+        <include refid="Column_List"/>
+        from t_product_text
+        where 1 = 1
+        and product_code = #{productCode,jdbcType=VARCHAR}
+        and text_id = #{textId,jdbcType=VARCHAR}
+
+    </select>
+
+    <select id="selectProductTextEntityByProductCode" parameterType="string" resultMap="ResultMap">
+        select
+        <include refid="Column_List"/>
+        from t_product_text
+        where 1 = 1
+        and product_code = #{productCode,jdbcType=VARCHAR}
+
+    </select>
+
+    <insert id="bulkInsertProductTextEntity" parameterType="java.util.List">
+        insert into t_product_text (
+
+        <include refid="Column_List"/>
+        )
+        values
+        <foreach collection="list" item="entity" index="index" separator=",">
+            (
+            #{entity.textId,jdbcType=VARCHAR},
+            #{entity.productCode,jdbcType=VARCHAR},
+            #{entity.value,jdbcType=VARCHAR}
+            )
+        </foreach>
+    </insert>
+
+    <delete id="deleteProductTextByProductCodeAndTextId">
+        delete from t_product_text
+        where 1 = 1
+        and product_code = #{productCode,jdbcType=VARCHAR}
+        and text_id = #{textId,jdbcType=VARCHAR}
+    </delete>
+
+
+</mapper>   

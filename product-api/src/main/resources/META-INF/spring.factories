@@ -1,0 +1,4 @@
+org.springframework.boot.autoconfigure.EnableAutoConfiguration=\
+    com.zero.product.api.config.ProductModelAutoConfiguration,\
+    com.zero.product.api.config.JsonUtilCustomerConfiguration,\
+    com.zero.product.api.config.ApiConverterAutoConfiguration

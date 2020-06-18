@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.zero.product.web.persistence.ProductCategoryEntityMapper">
+    <!-- Result Map-->
+    <resultMap id="ResultMap" type="com.zero.product.web.entity.ProductCategoryEntity">
+        <result column="id" property="id"/><!--  -->
+        <result column="create_dttm" property="createDatetime"/><!--  -->
+        <result column="create_user" property="createUser"/><!--  -->
+        <result column="update_dttm" property="updateDatetime"/><!--  -->
+        <result column="update_user" property="updateUser"/><!--  -->
+        <result column="name" property="name"/><!--  -->
+        <result column="category" property="category"/><!--  -->
+        <result column="description" property="description"/><!--  -->
+        <result column="tenant_id" property="tenantId"/><!--  -->
+    </resultMap>
+
+    <!-- t_prd_info table all fields -->
+    <sql id="Column_List">
+        <trim suffixOverrides=",">
+            id,
+            create_dttm,
+            create_user,
+            update_dttm,
+            update_user,
+            name,
+            category,
+            description,
+            tenant_id,
+        </trim>
+    </sql>
+
+
+    <!-- 插入记录 // 主键生成方式 01:UUID 02:自增 -->
+    <insert id="insertProductCategoryEntity" parameterType="com.zero.product.web.entity.ProductCategoryEntity">
+
+        Insert Into t_product_category
+        (
+        <trim suffixOverrides=",">
+            id,
+            create_dttm,
+            create_user,
+            update_dttm,
+            update_user,
+            name,
+            category,
+            description,
+            tenant_id,
+        </trim>
+        )
+        Values
+        (
+        <trim suffixOverrides=",">
+            #{id},
+            #{createDatetime},
+            #{createUser},
+            #{updateDatetime},
+            #{updateUser},
+            #{name,jdbcType=VARCHAR},
+            #{category,jdbcType=VARCHAR},
+            #{description,jdbcType=VARCHAR},
+            #{tenantId,jdbcType=VARCHAR},
+        </trim>
+        )
+    </insert>
+
+    <select id="selectProductCategoryEntityByCategory" parameterType="string" resultMap="ResultMap">
+        select
+        <include refid="Column_List"/>
+        from t_product_category
+        where 1 = 1
+        and category = #{category,jdbcType=VARCHAR}
+
+    </select>
+    <select id="selectAll" resultMap="ResultMap" parameterType="com.zero.product.api.model.qo.ProductPagingRequest">
+        select
+        <include refid="Column_List"/>
+        from t_product_category
+
+    </select>
+
+
+</mapper>   

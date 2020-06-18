@@ -1,0 +1,253 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.zero.product.web.persistence.ProductFeatureEntityMapper">
+    <!-- Result Map-->
+    <resultMap id="ResultMap" type="com.zero.product.web.entity.ProductFeatureEntity">
+        <result column="id" property="id"/><!--  -->
+        <result column="create_dttm" property="createDatetime"/><!--  -->
+        <result column="create_user" property="createUser"/><!--  -->
+        <result column="update_dttm" property="updateDatetime"/><!--  -->
+        <result column="update_user" property="updateUser"/><!--  -->
+        <result column="product_code" property="productCode"/><!--  -->
+        <result column="name" property="name"/><!--  -->
+        <result column="value" property="value"/><!--  -->
+        <result column="min_value" property="minValue"/><!--  -->
+        <result column="max_value" property="maxValue"/><!--  -->
+        <result column="value_type" property="valueType"/><!--  -->
+        <result column="clazz" property="clazz"/>
+        <result column="dict_code" property="dictCode"/>
+    </resultMap>
+
+    <!-- t_prd_factor_value table all fields -->
+    <sql id="Column_List">
+        <trim suffixOverrides=",">
+            id,
+            create_dttm,
+            create_user,
+            update_dttm,
+            update_user,
+            product_code,
+            name,
+            value,
+            min_value,
+            max_value,
+            value_type,
+            clazz,
+            dict_code,
+        </trim>
+    </sql>
+
+
+    <!-- 查询条件 -->
+    <sql id="Where_Clause">
+        where 1=1
+        <trim suffixOverrides=",">
+            <if test="id != null and id != ''">
+                and id = #{id}
+            </if>
+            <if test="createTime != null">
+                and create_time = #{createTime}
+            </if>
+            <if test="createUser != null and createUser != ''">
+                and create_user = #{createUser}
+            </if>
+            <if test="updateTime != null">
+                and update_time = #{updateTime}
+            </if>
+            <if test="updateUser != null and updateUser != ''">
+                and update_user = #{updateUser}
+            </if>
+            <if test="propCode != null and propCode != ''">
+                and prop_code = #{propCode}
+            </if>
+            <if test="propValue != null and propValue != ''">
+                and prop_value = #{propValue}
+            </if>
+            <if test="propStart != null and propStart != ''">
+                and prop_start = #{propStart}
+            </if>
+            <if test="propEnd != null and propEnd != ''">
+                and prop_end = #{propEnd}
+            </if>
+            <if test="propType != null and propType != ''">
+                and prop_type = #{propType}
+            </if>
+            <if test="propFactorId != null and propFactorId != ''">
+                and prop_factor_id = #{propFactorId}
+            </if>
+        </trim>
+    </sql>
+
+
+    <!-- 插入记录 // 主键生成方式 01:UUID 02:自增 -->
+    <insert id="insertProductFeatureEntity" parameterType="Object">
+        Insert Into t_product_feature
+        (
+        <include refid="Column_List"/>
+        )
+        Values
+        (
+        <trim suffixOverrides=",">
+            #{id},
+            #{createDatetime},
+            #{createUser},
+            #{updateDatetime},
+            #{updateUser},
+            #{productCode,jdbcType=VARCHAR},
+            #{name,jdbcType=VARCHAR},
+            #{value,jdbcType=VARCHAR},
+            #{minValue,jdbcType=VARCHAR},
+            #{maxValue,jdbcType=VARCHAR},
+            #{valueType,jdbcType=VARCHAR},
+            #{clazz,jdbcType=VARCHAR},
+            #{dictCode,jdbcType=VARCHAR},
+        </trim>
+        )
+    </insert>
+
+    <insert id="bulkInsertProductFeatureEntity" parameterType="java.util.List">
+        insert into t_product_feature (
+
+        <include refid="Column_List"/>
+        )
+        values
+        <foreach collection="list" item="entity" index="index" separator=",">
+            (
+            #{entity.id},
+            #{entity.createDatetime},
+            #{entity.createUser},
+            #{entity.updateDatetime},
+            #{entity.updateUser},
+            #{entity.productCode,jdbcType=VARCHAR},
+            #{entity.name,jdbcType=VARCHAR},
+            #{entity.value,jdbcType=VARCHAR},
+            #{entity.minValue,jdbcType=VARCHAR},
+            #{entity.maxValue,jdbcType=VARCHAR},
+            #{entity.valueType,jdbcType=VARCHAR},
+            #{entity.clazz,jdbcType=VARCHAR},
+            #{entity.dictCode,jdbcType=VARCHAR}
+            )
+        </foreach>
+    </insert>
+
+    <select id="selectProductFeatureEntityByProductCode" parameterType="string" resultMap="ResultMap">
+        select
+        <include refid="Column_List"/>
+        from t_product_feature
+        where 1=1
+        and product_code = #{productCode,jdbcType=VARCHAR}
+    </select>
+
+    <delete id="deleteProductFeatureEntityByProductCode" parameterType="string">
+        delete from t_product_feature
+        where 1=1
+        and product_code = #{productCode,jdbcType=VARCHAR}
+    </delete>
+
+<!--    &lt;!&ndash; 根据id，修改记录&ndash;&gt;-->
+<!--    <update id="update" parameterType="Object">-->
+<!--        update t_prd_factor_value set-->
+<!--        <trim suffixOverrides=",">-->
+<!--            create_time = #{createTime},-->
+<!--            create_user = #{createUser},-->
+<!--            update_time = #{updateTime},-->
+<!--            update_user = #{updateUser},-->
+<!--            prop_code = #{propCode},-->
+<!--            prop_value = #{propValue},-->
+<!--            prop_start = #{propStart},-->
+<!--            prop_end = #{propEnd},-->
+<!--            prop_type = #{propType},-->
+<!--            prop_factor_id = #{propFactorId},-->
+<!--        </trim>-->
+<!--        where id = #{id}-->
+<!--    </update>-->
+
+<!--    &lt;!&ndash; 删除记录 &ndash;&gt;-->
+<!--    <delete id="delete" parameterType="Object">-->
+<!--	delete from t_prd_factor_value  where id = #{id}-->
+<!--</delete>-->
+
+<!--    &lt;!&ndash; 修改记录，只修改只不为空的字段 &ndash;&gt;-->
+<!--    <update id="updateOnlyChanged" parameterType="Object">-->
+<!--        update t_prd_factor_value set-->
+<!--        <trim suffixOverrides=",">-->
+<!--            <if test="createTime != null">-->
+<!--                create_time = #{createTime},-->
+<!--            </if>-->
+<!--            <if test="createUser != null and createUser != '' ">-->
+<!--                create_user = #{createUser},-->
+<!--            </if>-->
+<!--            <if test="updateTime != null">-->
+<!--                update_time = #{updateTime},-->
+<!--            </if>-->
+<!--            <if test="updateUser != null and updateUser != '' ">-->
+<!--                update_user = #{updateUser},-->
+<!--            </if>-->
+<!--            <if test="propCode != null and propCode != '' ">-->
+<!--                prop_code = #{propCode},-->
+<!--            </if>-->
+<!--            <if test="propValue != null and propValue != '' ">-->
+<!--                prop_value = #{propValue},-->
+<!--            </if>-->
+<!--            <if test="propStart != null and propStart != '' ">-->
+<!--                prop_start = #{propStart},-->
+<!--            </if>-->
+<!--            <if test="propEnd != null and propEnd != '' ">-->
+<!--                prop_end = #{propEnd},-->
+<!--            </if>-->
+<!--            <if test="propType != null and propType != '' ">-->
+<!--                prop_type = #{propType},-->
+<!--            </if>-->
+<!--            <if test="propFactorId != null and propFactorId != '' ">-->
+<!--                prop_factor_id = #{propFactorId},-->
+<!--            </if>-->
+<!--        </trim>-->
+<!--        where id = #{id}-->
+<!--    </update>-->
+
+<!--    &lt;!&ndash; 根据id查询  &ndash;&gt;-->
+<!--    <select id="queryById" resultMap="ResultMap" parameterType="Object">-->
+<!--        select-->
+<!--        <include refid="Column_List"/>-->
+<!--        from t_prd_factor_value where id = #{id}-->
+<!--    </select>-->
+
+
+<!--    &lt;!&ndash; 查询列表 &ndash;&gt;-->
+<!--    <select id="queryList" resultMap="ResultMap" parameterType="map">-->
+<!--        select-->
+<!--        <include refid="Column_List"/>-->
+<!--        from t_prd_factor_value-->
+<!--        <include refid="Where_Clause"/>-->
+<!--    </select>-->
+
+<!--    &lt;!&ndash; 修改记录，只修改只不为空的字段 &ndash;&gt;-->
+<!--    <update id="updateChangeInfo" parameterType="Object">-->
+<!--        update t_prd_factor_value set-->
+<!--        <trim suffixOverrides=",">-->
+
+<!--            <if test="updateTime != null">-->
+<!--                update_time = #{updateTime},-->
+<!--            </if>-->
+<!--            <if test="updateUser != null and updateUser != '' ">-->
+<!--                update_user = #{updateUser},-->
+<!--            </if>-->
+<!--            <if test="propValue != null and propValue != '' ">-->
+<!--                prop_value = #{propValue},-->
+<!--            </if>-->
+<!--            <if test="propStart != null and propStart != '' ">-->
+<!--                prop_start = #{propStart},-->
+<!--            </if>-->
+<!--            <if test="propEnd != null and propEnd != '' ">-->
+<!--                prop_end = #{propEnd},-->
+<!--            </if>-->
+<!--            <if test="propType != null and propType != '' ">-->
+<!--                prop_type = #{propType},-->
+<!--            </if>-->
+<!--        </trim>-->
+<!--        where prop_factor_id = #{propFactorId}-->
+<!--    </update>-->
+
+</mapper>   

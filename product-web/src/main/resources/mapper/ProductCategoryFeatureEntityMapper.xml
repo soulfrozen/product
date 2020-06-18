@@ -1,0 +1,126 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.zero.product.web.persistence.ProductCategoryFeatureEntityMapper">
+    <!-- Result Map-->
+    <resultMap id="ResultMap" type="com.zero.product.web.entity.ProductCategoryFeatureEntity">
+        <result column="id" property="id"/><!--  -->
+        <result column="create_dttm" property="createDatetime"/><!--  -->
+        <result column="create_user" property="createUser"/><!--  -->
+        <result column="update_dttm" property="updateDatetime"/><!--  -->
+        <result column="update_user" property="updateUser"/><!--  -->
+        <result column="name" property="name"/><!--  -->
+        <result column="category" property="category"/><!--  -->
+        <result column="description" property="description"/><!--  -->
+        <result column="value_type" property="valueType"/><!--  -->
+        <result column="clazz" property="clazz"/>
+        <result column="dict_code" property="dictCode"/>
+        <result column="check_rule" property="checkRule"/>
+        <result column="optional" property="optional"/>
+    </resultMap>
+    <!--
+        private String category;
+
+    private String name;
+
+    private String description;
+
+    private String valueType;
+
+    private String dictCode;
+
+    private String clazz;
+
+    private String checkRule;
+    -->
+
+    <!-- t_prd_info table all fields -->
+    <sql id="Column_List">
+        <trim suffixOverrides=",">
+            id,
+            create_dttm,
+            create_user,
+            update_dttm,
+            update_user,
+            name,
+            category,
+            description,
+            value_type,
+            clazz,
+            dict_code,
+            check_rule,
+            optional,
+        </trim>
+    </sql>
+
+
+    <!-- 插入记录 // 主键生成方式 01:UUID 02:自增 -->
+    <insert id="insertProductCategoryFeatureEntity" parameterType="com.zero.product.web.entity.ProductCategoryFeatureEntity">
+
+        Insert Into t_product_category_feature
+        (
+        <include refid="Column_List"/>
+        )
+        Values
+        (
+        <trim suffixOverrides=",">
+            #{id},
+            #{createDatetime},
+            #{createUser},
+            #{updateDatetime},
+            #{updateUser},
+            #{name,jdbcType=VARCHAR},
+            #{category,jdbcType=VARCHAR},
+            #{description,jdbcType=VARCHAR},
+            #{valueType,jdbcType=VARCHAR},
+            #{clazz,jdbcType=VARCHAR},
+            #{dictCode,jdbcType=VARCHAR},
+            #{checkRule,jdbcType=VARCHAR},
+            #{optional,jdbcType=VARCHAR},
+        </trim>
+        )
+    </insert>
+
+    <select id="selectProductCategoryFeaturesEntityByCategory" parameterType="string" resultMap="ResultMap">
+        select
+        <include refid="Column_List"/>
+        from t_product_category_feature
+        where 1 = 1
+        and category = #{category,jdbcType=VARCHAR}
+
+    </select>
+
+    <insert id="bulkInsertProductFeatureEntity" parameterType="java.util.List">
+        insert into t_product_category_feature (
+
+        <include refid="Column_List"/>
+        )
+        values
+        <foreach collection="list" item="entity" index="index" separator=",">
+            (
+            #{entity.id},
+            #{entity.createDatetime},
+            #{entity.createUser},
+            #{entity.updateDatetime},
+            #{entity.updateUser},
+            #{entity.name,jdbcType=VARCHAR},
+            #{entity.category,jdbcType=VARCHAR},
+            #{entity.description,jdbcType=VARCHAR},
+            #{entity.valueType,jdbcType=VARCHAR},
+            #{entity.clazz,jdbcType=VARCHAR},
+            #{entity.dictCode,jdbcType=VARCHAR},
+            #{entity.checkRule,jdbcType=VARCHAR},
+            #{entity.optional,jdbcType=VARCHAR}
+            )
+        </foreach>
+    </insert>
+
+    <delete id="deleteProductCategoryFeaturesEntityByCategory" parameterType="string">
+        delete from t_product_category_feature
+        where 1 = 1
+        and category = #{category,jdbcType=VARCHAR}
+    </delete>
+
+
+</mapper>   

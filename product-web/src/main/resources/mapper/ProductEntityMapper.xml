@@ -1,0 +1,340 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.zero.product.web.persistence.ProductEntityMapper">
+    <!-- Result Map-->
+    <resultMap id="ResultMap" type="com.zero.product.web.entity.ProductEntity">
+        <result column="id" property="id"/><!--  -->
+        <result column="create_dttm" property="createDatetime"/><!--  -->
+        <result column="create_user" property="createUser"/><!--  -->
+        <result column="update_dttm" property="updateDatetime"/><!--  -->
+        <result column="update_user" property="updateUser"/><!--  -->
+        <result column="product_name" property="productName"/><!--  -->
+        <result column="product_code" property="productCode"/><!--  -->
+        <result column="category" property="category"/><!--  -->
+        <result column="description" property="description"/><!--  -->
+        <result column="tenant_id" property="tenantId"/><!--  -->
+        <result column="status" property="status" typeHandler="org.apache.ibatis.type.EnumOrdinalTypeHandler"/><!--  -->
+    </resultMap>
+
+    <!-- t_prd_info table all fields -->
+    <sql id="Column_List">
+        <trim suffixOverrides=",">
+            id,
+            create_dttm,
+            create_user,
+            update_dttm,
+            update_user,
+            product_name,
+            product_code,
+            category,
+            description,
+            tenant_id,
+            status,
+            busi_type,
+        </trim>
+    </sql>
+
+
+    <!-- 插入记录 // 主键生成方式 01:UUID 02:自增 -->
+    <insert id="insertProductEntity" parameterType="com.zero.product.web.entity.ProductEntity">
+
+        Insert Into t_product
+        (
+        <trim suffixOverrides=",">
+            id,
+            create_dttm,
+            create_user,
+            update_dttm,
+            update_user,
+            product_name,
+            product_code,
+            category,
+            description,
+            tenant_id,
+            status,
+            busi_type
+        </trim>
+        )
+        Values
+        (
+        <trim suffixOverrides=",">
+            #{id},
+            #{createDatetime},
+            #{createUser},
+            #{updateDatetime},
+            #{updateUser},
+            #{productName,jdbcType=VARCHAR},
+            #{productCode,jdbcType=VARCHAR},
+            #{category,jdbcType=VARCHAR},
+            #{description,jdbcType=VARCHAR},
+            #{tenantId,jdbcType=VARCHAR},
+            #{status,jdbcType=VARCHAR,typeHandler=org.apache.ibatis.type.EnumOrdinalTypeHandler},
+            #{busiType,jdbcType=VARCHAR}
+        </trim>
+        )
+    </insert>
+    <update id="updateProductStatus">
+		update t_product
+		set status = status + 1
+		where product_code = #{productCode,jdbcType=VARCHAR}
+
+	</update>
+    <select id="selectProductEntityByProductCode" parameterType="string" resultMap="ResultMap">
+        select
+        <include refid="Column_List"/>
+        from t_product
+        where 1 = 1
+        and product_code = #{productCode,jdbcType=VARCHAR}
+
+    </select>
+    <select id="selectAll" resultMap="ResultMap" parameterType="com.zero.product.api.model.qo.ProductPagingRequest">
+        select
+        <include refid="Column_List"/>
+        from t_product
+        <where>
+            1 = 1
+            <if test="status != null">
+                and status = #{status,jdbcType=VARCHAR,typeHandler=org.apache.ibatis.type.EnumOrdinalTypeHandler}
+            </if>
+            <if test="productCode != null and productCode != ''">
+                and product_code = #{productCode,jdbcType=VARCHAR}
+            </if>
+            <if test="productName != null and productName != ''">
+                and product_name like contract('%',#{productName,jdbcType=VARCHAR},'%')
+            </if>
+            <if test="tenantId != null and tenantId != ''">
+                and tenant_id = #{tenantId,jdbcType=VARCHAR}
+            </if>
+            <if test="category != null and category != ''">
+                and category = #{category,jdbcType=VARCHAR}
+            </if>
+            <if test="busiType != null and busiType != ''">
+                and busi_type = #{busiType,jdbcType=VARCHAR}
+            </if>
+        </where>
+
+
+    </select>
+
+    <!-- 根据id，修改记录-->
+    <!--<update id="update" parameterType="object" >-->
+    <!--	update t_prd_info set -->
+    <!--	<trim  suffixOverrides="," >-->
+    <!--	create_time =  #{createTime},-->
+    <!--	create_user =  #{createUser},-->
+    <!--	update_time =  #{updateTime},-->
+    <!--	update_user =  #{updateUser},-->
+    <!--	product_name =  #{productName},-->
+    <!--	product_code =  #{productCode},-->
+    <!--	product_type_code =  #{productTypeCode},-->
+    <!--	product_price =  #{productPrice},-->
+    <!--	prd_desc =  #{prdDesc},-->
+    <!--	prd_condition =  #{prdCondition},-->
+    <!--	</trim>-->
+    <!-- 	where id = #{id}-->
+    <!--</update>-->
+
+    <!--&lt;!&ndash; 删除记录 &ndash;&gt;-->
+    <!--<delete id="delete" parameterType="object">-->
+    <!--	delete from t_prd_info  where id = #{id}-->
+    <!--</delete>-->
+
+    <!--&lt;!&ndash; 修改记录，只修改只不为空的字段 &ndash;&gt;-->
+    <!--<update id="updateOnlyChanged" parameterType="object" >-->
+    <!--	update t_prd_info set -->
+    <!--	<trim  suffixOverrides="," >-->
+    <!--	<if test="createTime != null" >-->
+    <!--		create_time =  #{createTime},-->
+    <!--	</if>-->
+    <!--	<if test="createUser != null and createUser != '' " >-->
+    <!--		create_user =  #{createUser},-->
+    <!--	</if>-->
+    <!--	<if test="updateTime != null" >-->
+    <!--		update_time =  #{updateTime},-->
+    <!--	</if>-->
+    <!--	<if test="updateUser != null and updateUser != '' " >-->
+    <!--		update_user =  #{updateUser},-->
+    <!--	</if>-->
+    <!--	<if test="productName != null and productName != '' " >-->
+    <!--		product_name =  #{productName},-->
+    <!--	</if>-->
+    <!--	<if test="productCode != null and productCode != '' " >-->
+    <!--		product_code =  #{productCode},-->
+    <!--	</if>-->
+    <!--	<if test="productTypeCode != null and productTypeCode != '' " >-->
+    <!--		product_type_code =  #{productTypeCode},-->
+    <!--	</if>-->
+    <!--	<if test="productPrice != null and productPrice != ''  or productPrice == 0" >-->
+    <!--		product_price =  #{productPrice},-->
+    <!--	</if>-->
+    <!--	<if test="prdDesc != null and prdDesc != '' " >-->
+    <!--		prd_desc =  #{prdDesc},-->
+    <!--	</if>-->
+    <!--	<if test="prdCondition != null and prdCondition != ''" >-->
+    <!--		prd_condition =  #{prdCondition},-->
+    <!--	</if>-->
+    <!--	</trim>-->
+    <!--	where id = #{id}-->
+    <!--</update>-->
+
+
+    <!--	&lt;!&ndash; 修改记录，只修改只不为空的字段 &ndash;&gt;-->
+    <!--	<update id="updateOnlyChangedByCode" parameterType="object" >-->
+    <!--		update t_prd_info set-->
+    <!--		<trim  suffixOverrides="," >-->
+
+
+    <!--			<if test="updateTime != null" >-->
+    <!--				update_time =  #{updateTime},-->
+    <!--			</if>-->
+    <!--			<if test="updateUser != null and updateUser != '' " >-->
+    <!--				update_user =  #{updateUser},-->
+    <!--			</if>-->
+    <!--			<if test="productName != null and productName != '' " >-->
+    <!--				product_name =  #{productName},-->
+    <!--			</if>-->
+
+    <!--			<if test="productTypeCode != null and productTypeCode != '' " >-->
+    <!--				product_type_code =  #{productTypeCode},-->
+    <!--			</if>-->
+    <!--			<if test="productPrice != null and productPrice != ''  or productPrice == 0" >-->
+    <!--				product_price =  #{productPrice},-->
+    <!--			</if>-->
+    <!--			<if test="prdDesc != null and prdDesc != '' " >-->
+    <!--				prd_desc =  #{prdDesc},-->
+    <!--			</if>-->
+    <!--			<if test="prdCondition != null and prdCondition != ''" >-->
+    <!--				prd_condition =  #{prdCondition},-->
+    <!--			</if>-->
+    <!--		</trim>-->
+    <!--		where product_code = #{productCode}-->
+    <!--	</update>-->
+
+
+    <!--&lt;!&ndash;  列表总数&ndash;&gt;-->
+    <!--<select id="queryCount" resultType="java.lang.Integer"  parameterType="map">-->
+    <!--	select count(1) from t_prd_info-->
+    <!--	<include refid="Where_Clause"/>-->
+    <!--</select>-->
+
+    <!--&lt;!&ndash; 查询列表 &ndash;&gt;-->
+    <!--<select id="queryList" resultMap="ResultMap"  parameterType="map">-->
+    <!--	select-->
+    <!--	<include refid="Column_List"/>-->
+    <!--	from t_prd_info-->
+    <!--	<include refid="Where_Clause"/>-->
+    <!--</select>-->
+
+    <!--  		&lt;!&ndash; 查询分页 &ndash;&gt;-->
+    <!--<select id="pageQuery" resultMap="ResultMap"  parameterType="map">-->
+    <!--    SELECT-->
+    <!--    <include refid="Column_List"/>-->
+    <!--    from t_prd_info-->
+    <!--    <include refid="Where_Clause" />-->
+    <!--</select>-->
+
+    <!--	&lt;!&ndash; 根据id查询  &ndash;&gt;-->
+
+
+    <!--	&lt;!&ndash; 产品查询时 &ndash;&gt;-->
+    <!--	&lt;!&ndash; Result Map&ndash;&gt;-->
+    <!--	<resultMap id="ResultMap1" type="com.zero.model.bean.PrdInfoBean" >-->
+    <!--		<result column="id" property="id"/>&lt;!&ndash;  &ndash;&gt;-->
+    <!--		<result column="create_time" property="createTime"/>&lt;!&ndash;  &ndash;&gt;-->
+    <!--		<result column="create_user" property="createUser"/>&lt;!&ndash;  &ndash;&gt;-->
+    <!--		<result column="update_time" property="updateTime"/>&lt;!&ndash;  &ndash;&gt;-->
+    <!--		<result column="update_user" property="updateUser"/>&lt;!&ndash;  &ndash;&gt;-->
+    <!--		<result column="product_name" property="productName"/>&lt;!&ndash;  &ndash;&gt;-->
+    <!--		<result column="product_code" property="productCode"/>&lt;!&ndash;  &ndash;&gt;-->
+    <!--		<result column="product_type_code" property="productTypeCode"/>&lt;!&ndash;  &ndash;&gt;-->
+    <!--		<result column="product_price" property="productPrice"/>&lt;!&ndash;  &ndash;&gt;-->
+    <!--		<result column="prd_desc" property="prdDesc"/>&lt;!&ndash;  &ndash;&gt;-->
+    <!--		<result column="prd_condition" property="prdCondition"/>&lt;!&ndash;  &ndash;&gt;-->
+    <!--		<result column="status" property="status"/>&lt;!&ndash;  &ndash;&gt;-->
+    <!--		<result column="audit_status" property="auditStatus"/>&lt;!&ndash;  &ndash;&gt;-->
+    <!--	</resultMap>-->
+    <!--	&lt;!&ndash; t_prd_info table all fields &ndash;&gt;-->
+    <!--	<sql id="Column_List1" >-->
+    <!--		<trim  suffixOverrides="," >-->
+    <!--			a.id,-->
+    <!--			a.create_time,-->
+    <!--			a.create_user,-->
+    <!--			a.update_time,-->
+    <!--			a.update_user,-->
+    <!--			a.product_name,-->
+    <!--			a.product_code,-->
+    <!--			a.product_type_code,-->
+    <!--			a.product_price,-->
+    <!--			a.prd_desc,-->
+    <!--			a.prd_condition,-->
+    <!--			b.status,-->
+    <!--			b.audit_status,-->
+    <!--		</trim>-->
+    <!--	</sql>-->
+
+    <!--	&lt;!&ndash; 查询条件 &ndash;&gt;-->
+    <!--	<sql id="Where_Clause1">-->
+    <!--		where 1=1-->
+    <!--		<trim  suffixOverrides="," >-->
+    <!--			<if test="id != null and id != ''" >-->
+    <!--				and id =  #{id}-->
+    <!--			</if>-->
+    <!--			<if test="createTime != null" >-->
+    <!--				and create_time =  #{createTime}-->
+    <!--			</if>-->
+    <!--			<if test="createUser != null and createUser != ''" >-->
+    <!--				and create_user =  #{createUser}-->
+    <!--			</if>-->
+    <!--			<if test="updateTime != null" >-->
+    <!--				and update_time =  #{updateTime}-->
+    <!--			</if>-->
+    <!--			<if test="updateUser != null and updateUser != ''" >-->
+    <!--				and update_user =  #{updateUser}-->
+    <!--			</if>-->
+    <!--			<if test="productName != null and productName != ''" >-->
+    <!--				and product_name =  #{productName}-->
+    <!--			</if>-->
+    <!--			<if test="productCode != null and productCode != ''" >-->
+    <!--				and product_code =  #{productCode}-->
+    <!--			</if>-->
+    <!--			<if test="productTypeCode != null and productTypeCode != ''" >-->
+    <!--				and product_type_code =  #{productTypeCode}-->
+    <!--			</if>-->
+    <!--			<if test="productPrice != null and productPrice != ''" >-->
+    <!--				and product_price =  #{productPrice}-->
+    <!--			</if>-->
+    <!--			<if test="prdDesc != null and prdDesc != ''" >-->
+    <!--				and prd_desc =  #{prdDesc}-->
+    <!--			</if>-->
+    <!--			<if test="prdCondition != null and prdCondition != ''" >-->
+    <!--				and prd_condition =  #{prdCondition}-->
+    <!--			</if>-->
+
+    <!--		</trim>-->
+    <!--	</sql>-->
+    <!--	<select id="queryByCode"  resultMap="ResultMap1" parameterType="object">-->
+    <!--		select <include refid="Column_List1" />-->
+    <!--		from t_prd_info  a-->
+    <!--		LEFT  JOIN  t_prd_status b on a.id = b.product_id-->
+    <!--		where product_code = #{product_code}-->
+    <!--	</select>-->
+    <!--	&lt;!&ndash; 根据id查询  &ndash;&gt;-->
+    <!--	<select id="queryById"  resultMap="ResultMap1" parameterType="object">-->
+    <!--		select <include refid="Column_List1" />-->
+    <!--		from t_prd_info  a-->
+    <!--		LEFT  JOIN  t_prd_status b on a.id = b.product_id-->
+    <!--		where id = #{id}-->
+    <!--	</select>-->
+
+    <!--	&lt;!&ndash; 查询分页 &ndash;&gt;-->
+    <!--	<select id="pageQueryList" resultMap="ResultMap1"  parameterType="map">-->
+    <!--		SELECT-->
+    <!--		<include refid="Column_List1"/>-->
+    <!--		from t_prd_info-->
+    <!--		<include refid="Where_Clause1" />-->
+    <!--	</select>-->
+    <!--	-->
+
+</mapper>   

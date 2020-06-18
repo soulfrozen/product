@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.zero.product.web.persistence.ProductCategoryBusiTypeEntityMapper">
+    <!-- Result Map-->
+    <resultMap id="ResultMap" type="com.zero.product.web.entity.ProductCategoryBusiTypeEntity">
+
+        <result column="category" property="category"/><!--  -->
+        <result column="busi_type" property="busiType"/>
+        <result column="description" property="description"/><!--  -->
+
+    </resultMap>
+
+
+    <!-- t_prd_info table all fields -->
+    <sql id="Column_List">
+        <trim suffixOverrides=",">
+            category,
+            busi_type,
+            description,
+        </trim>
+    </sql>
+
+
+    <!-- 插入记录 // 主键生成方式 01:UUID 02:自增 -->
+    <insert id="insertProductCategoryBusiTypeEntity" parameterType="com.zero.product.web.entity.ProductCategoryBusiTypeEntity">
+
+        Insert Into t_product_category_type
+        (
+        <include refid="Column_List"/>
+        )
+        Values
+        (
+        <trim suffixOverrides=",">
+            #{category,jdbcType=VARCHAR},
+            #{busiType,jdbcType=VARCHAR},
+            #{description,jdbcType=VARCHAR},
+        </trim>
+        )
+    </insert>
+
+    <select id="selectProductCategoryBusiTypesEntityByCategory" parameterType="string" resultMap="ResultMap">
+        select
+        <include refid="Column_List"/>
+        from t_product_category_type
+        where 1 = 1
+        and category = #{category,jdbcType=VARCHAR}
+
+    </select>
+
+    <insert id="bulkInsertProductBusiTypeEntity" parameterType="java.util.List">
+        insert into t_product_category_type (
+
+        <include refid="Column_List"/>
+        )
+        values
+        <foreach collection="list" item="entity" index="index" separator=",">
+            (
+            #{entity.category,jdbcType=VARCHAR},
+            #{entity.busiType,jdbcType=VARCHAR},
+            #{entity.description,jdbcType=VARCHAR}
+            )
+        </foreach>
+    </insert>
+
+    <delete id="deleteProductCategoryBusiTypesEntityByCategory" parameterType="string">
+        delete from t_product_category_type
+        where 1 = 1
+        and category = #{category,jdbcType=VARCHAR}
+    </delete>
+
+
+</mapper>   
