@@ -4,28 +4,29 @@ spring:
     name: product-web
   profiles:
     active: nacos
-  datasource:
-    type: com.zaxxer.hikari.HikariDataSource
-    #    jdbc-url: jdbc:mysql://172.31.20.2:3306/zero_wyx?useUnicode=true&characterEncoding=utf-8&useSSL=false
-    url: jdbc:mysql://localhost:3306/product?useSSL=false&useUnicode=true&characterEncoding=utf8&allowMultiQueries=true&connectTimeout=60000&socketTimeout=60000&autoReconnect=true&failOverReadOnly=false
-    #    url: jdbc:mysql://1.202.226.245:33306/contract?useUnicode=true&characterEncoding=utf-8&useSSL=false
-    username: root
-    password: root
-    driver-class-name: com.mysql.jdbc.Driver
-    hikari:
-      #      jdbc-url: jdbc:mysql://172.31.20.2:3306/zero_wyx?useUnicode=true&characterEncoding=utf-8&useSSL=false
-      # ???????????true? ????
-      #      read-only: false
-      # ???????????????????????????????????SQLException? ??:30?
-      connection-timeout: 30000
-      # ????idle???????????????????retired????:10??
-      idle-timeout: 600000
-      # ???????????????????????????retired????:30????????????????30?
-      max-lifetime: 1800000
-      # ?????????????????10
-      maximum-pool-size: 300
-      minimum-idle: 10
-      connection-test-query: SELECT 1
+    include: sharding
+#  datasource:
+#    type: com.zaxxer.hikari.HikariDataSource
+#    #    jdbc-url: jdbc:mysql://172.31.20.2:3306/zero_wyx?useUnicode=true&characterEncoding=utf-8&useSSL=false
+#    url: jdbc:mysql://localhost:3306/product?useSSL=false&useUnicode=true&characterEncoding=utf8&allowMultiQueries=true&connectTimeout=60000&socketTimeout=60000&autoReconnect=true&failOverReadOnly=false
+#    #    url: jdbc:mysql://1.202.226.245:33306/contract?useUnicode=true&characterEncoding=utf-8&useSSL=false
+#    username: root
+#    password: root
+#    driver-class-name: com.mysql.jdbc.Driver
+#    hikari:
+#      #      jdbc-url: jdbc:mysql://172.31.20.2:3306/zero_wyx?useUnicode=true&characterEncoding=utf-8&useSSL=false
+#      # ???????????true? ????
+#      #      read-only: false
+#      # ???????????????????????????????????SQLException? ??:30?
+#      connection-timeout: 30000
+#      # ????idle???????????????????retired????:10??
+#      idle-timeout: 600000
+#      # ???????????????????????????retired????:30????????????????30?
+#      max-lifetime: 1800000
+#      # ?????????????????10
+#      maximum-pool-size: 300
+#      minimum-idle: 10
+#      connection-test-query: SELECT 1
 
 security:
   ignored: /**
@@ -69,3 +70,72 @@ eureka:
   client:
     service-url:
       defaultZone: ${REGISTRY_CLUSTER_ADDRESS:http://${REGISTRY_SERVER_USERNAME:admin}:${REGISTRY_SERVER_PASSWORD:admin}@${REGISTRY_SERVER_HOST:localhost}:${REGISTRY_SERVER_PORT:8761}/eureka}
+
+---
+spring:
+  profiles: sharding
+sharding:
+  jdbc:
+    datasource:
+      names: ds0,ds1
+      ds0:
+        type: com.zaxxer.hikari.HikariDataSource
+        driver-class-name: com.mysql.jdbc.Driver
+        jdbc-url: jdbc:mysql://localhost:3306/product_sharding_1?useUnicode=true&characterEncoding=utf-8&useSSL=false
+        username: root
+        password: root
+        maximum-pool-size: 300
+        minimum-idle: 10
+      ds1:
+        type: com.zaxxer.hikari.HikariDataSource
+        driver-class-name: com.mysql.jdbc.Driver
+        jdbc-url: jdbc:mysql://localhost:3306/product_sharding_2?useUnicode=true&characterEncoding=utf-8&useSSL=false
+        username: root
+        password: root
+        maximum-pool-size: 300
+        minimum-idle: 10
+    config:
+      sharding:
+        defaultDataSourceName: ds0
+        tables:
+          t_product:
+            actual-data-nodes: ds$->{0..1}.t_product_$->{0..1}
+            table-strategy:
+              standard:
+                shardingColumn: product_code
+                preciseAlgorithmClassName: com.zero.product.web.sharding.algorithm.DefaultTableStrategyPreciseShardingAlgorithm
+                rangeAlgorithmClassName: com.zero.product.web.sharding.algorithm.DefaultTableStrategyRangeShardingAlgorithm
+            database-strategy:
+              standard:
+                shardingColumn: product_code
+                preciseAlgorithmClassName: com.zero.product.web.sharding.algorithm.DefaultDatabaseStrategyPreciseShardingAlgorithm
+                rangeAlgorithmClassName: com.zero.product.web.sharding.algorithm.DefaultDatabaseStrategyRangeShardingAlgorithm
+          t_product_feature:
+            actual-data-nodes: ds$->{0..1}.t_product_feature$->{0..1}
+            table-strategy:
+              standard:
+                shardingColumn: product_code
+                preciseAlgorithmClassName: com.zero.product.web.sharding.algorithm.DefaultTableStrategyPreciseShardingAlgorithm
+                rangeAlgorithmClassName: com.zero.product.web.sharding.algorithm.DefaultTableStrategyRangeShardingAlgorithm
+            database-strategy:
+              standard:
+                shardingColumn: product_code
+                preciseAlgorithmClassName: com.zero.product.web.sharding.algorithm.DefaultDatabaseStrategyPreciseShardingAlgorithm
+                rangeAlgorithmClassName: com.zero.product.web.sharding.algorithm.DefaultDatabaseStrategyRangeShardingAlgorithm
+
+          t_product_text:
+            actual-data-nodes: ds$->{0..1}.t_product_text$->{0..1}
+            table-strategy:
+              standard:
+                shardingColumn: product_code
+                preciseAlgorithmClassName: com.zero.product.web.sharding.algorithm.DefaultTableStrategyPreciseShardingAlgorithm
+                rangeAlgorithmClassName: com.zero.product.web.sharding.algorithm.DefaultTableStrategyRangeShardingAlgorithm
+            database-strategy:
+              standard:
+                shardingColumn: product_code
+                preciseAlgorithmClassName: com.zero.product.web.sharding.algorithm.DefaultDatabaseStrategyPreciseShardingAlgorithm
+                rangeAlgorithmClassName: com.zero.product.web.sharding.algorithm.DefaultDatabaseStrategyRangeShardingAlgorithm
+
+
+#        broadcast-tables: t_sys_dict,t_sys_dict_item
+

@@ -170,23 +170,23 @@ public class ProductServiceImpl implements ProductService {
                 }
             }
 
-            // TODO 字典类定制的校验， checkrule全面生效后可移除
-            if (feature instanceof DataDictValueFeatureImpl) {
-                DataDictValueFeatureImpl dataDictValueFeature = (DataDictValueFeatureImpl) feature;
-                String dictCode = dataDictValueFeature.getDictCode();
-                if (dictCode == null || !dictCode.equals(categoryDictCode)) {
-                    throw new RuntimeException("DataDictValueFeature dictcode 异常 name: " + feature.getName() );
-                }
-
-                SysDictEntity sysDictEntity = SysDictManager.getSysDictEntity(dictCode);
-                if (sysDictEntity == null) {
-                    throw new RuntimeException("数据字典不存在, code: " + dictCode);
-                }
-                boolean b = sysDictEntity.getItems().stream().anyMatch(a -> a.getCode().equals(dataDictValueFeature.getValue()));
-                if (!b) {
-                    throw new RuntimeException("数据字典值不存在, dictCode: " + dictCode + " code: " + dataDictValueFeature.getValue());
-                }
-            }
+//            // TODO 字典类定制的校验， checkrule全面生效后可移除
+//            if (feature instanceof DataDictValueFeatureImpl) {
+//                DataDictValueFeatureImpl dataDictValueFeature = (DataDictValueFeatureImpl) feature;
+//                String dictCode = dataDictValueFeature.getDictCode();
+//                if (dictCode == null || !dictCode.equals(categoryDictCode)) {
+//                    throw new RuntimeException("DataDictValueFeature dictcode 异常 name: " + feature.getName() );
+//                }
+//
+//                SysDictEntity sysDictEntity = SysDictManager.getSysDictEntity(dictCode);
+//                if (sysDictEntity == null) {
+//                    throw new RuntimeException("数据字典不存在, code: " + dictCode);
+//                }
+//                boolean b = sysDictEntity.getItems().stream().anyMatch(a -> a.getCode().equals(dataDictValueFeature.getValue()));
+//                if (!b) {
+//                    throw new RuntimeException("数据字典值不存在, dictCode: " + dictCode + " code: " + dataDictValueFeature.getValue());
+//                }
+//            }
         }
 
         Iterator<Map.Entry<String, ProductCategoryFeatureEntity>> iterator = categoryFeatureEntityMap.entrySet().iterator();
@@ -274,10 +274,9 @@ public class ProductServiceImpl implements ProductService {
         Product.ProductStatus oriStatus = product.getStatus();
         if (Product.ProductStatus.PUBLISHED.equals(status) && Product.ProductStatus.CREATE.equals(oriStatus)) {
             productEntityMapper.updateProductStatus(productCode);
+            selectProductEntityByProductCode(productCode);
         } else if(Product.ProductStatus.DOWN.equals(status) && Product.ProductStatus.PUBLISHED.equals(oriStatus)) {
             productEntityMapper.updateProductStatus(productCode);
-            // 刷新
-            selectProductEntityByProductCode(productCode);
         } else {
             Shift.fatal(StatusCode.INVALID_PARAMS_CHECK_ERROR,String.format("参数异常 原状态 %s, 修改状态%s", oriStatus, status));
         }

@@ -2,8 +2,8 @@ POST http://localhost:8900/products
 Content-Type: application/json
 
 {
-  "productCode": "0002",
-  "category": "asset1",
+  "productCode": "0004",
+  "category": "asset",
   "tenantId": "1",
   "busiType": "020",
   "status": "0",
@@ -51,7 +51,7 @@ POST http://localhost:8900/category
 Content-Type: application/json
 
 {
-  "category": "asset1",
+  "category": "asset",
   "name": "资产产品",
   "tenantId": "1",
   "features": [
